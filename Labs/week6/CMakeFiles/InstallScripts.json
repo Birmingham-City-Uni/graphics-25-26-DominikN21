@@ -1,0 +1,9 @@
+{
+	"InstallScripts" : 
+	[
+		"D:/GitHub thing/graphics-25-26-DominikN21/Labs/week6/cmake_install.cmake",
+		"D:/GitHub thing/graphics-25-26-DominikN21/Labs/week6/3rdParty/cmake_install.cmake",
+		"D:/GitHub thing/graphics-25-26-DominikN21/Labs/week6/3rdParty/lodepng/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

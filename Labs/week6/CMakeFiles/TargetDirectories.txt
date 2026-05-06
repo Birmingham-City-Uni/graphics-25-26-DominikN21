@@ -1,0 +1,4 @@
+D:/GitHub thing/graphics-25-26-DominikN21/Labs/week6/CMakeFiles/Task1.dir
+D:/GitHub thing/graphics-25-26-DominikN21/Labs/week6/CMakeFiles/ALL_BUILD.dir
+D:/GitHub thing/graphics-25-26-DominikN21/Labs/week6/CMakeFiles/ZERO_CHECK.dir
+D:/GitHub thing/graphics-25-26-DominikN21/Labs/week6/3rdParty/lodepng/CMakeFiles/lodepng.dir
