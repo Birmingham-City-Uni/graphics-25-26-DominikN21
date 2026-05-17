@@ -25,7 +25,7 @@ struct Triangle {
 };
 
 // ========= Subtask 1: Make a Projection Matrix ========
-Eigen::Matrix4f projectionMatrix(int height, int width, float horzFov = 70.f * M_PI / 180.f, float zFar = 10.f, float zNear = 0.1f)
+Eigen::Matrix4f projectionMatrix(int height, int width, float horzFov = 70.f * M_PI / 180.f, float zFar = 1000.f, float zNear = 0.00001f)
 {
 	float aspect = (float)width / (float)height;
 	float vertFov = 2.0f * atan(tan(horzFov / 2.0f) / aspect);
@@ -164,7 +164,7 @@ void drawMesh(std::vector<unsigned char>& image, std::vector<float>& zBuffer, co
 int main()
 {
 	std::string outputFilename = "output.png";
-	const int width = 512, height = 512;
+	const int width = 1920, height = 1080;
 	const int nChannels = 4;
 
 	std::vector<uint8_t> imageBuffer(height * width * nChannels);
@@ -174,20 +174,20 @@ int main()
 	for (int r = 0; r < height; ++r) {
 		for (int c = 0; c < width; ++c) {
 			setPixel(imageBuffer, c, r, width, height, black);
-			zBuffer[r * width + c] = 1.0f;
+			zBuffer[r * width + c] = 1e9f;
 		}
 	}
 
 	// ========== Subtask 3: Camera Matrices ========
 	Eigen::Matrix4f projection = projectionMatrix(height, width);
-	Eigen::Matrix4f cameraToWorld = translationMatrix(Eigen::Vector3f(0.f, 0.8f, 0.f)) * rotateXMatrix(0.4f);
+	Eigen::Matrix4f cameraToWorld = translationMatrix(Eigen::Vector3f(-181.f, 6.0f, -190.f)) * rotateXMatrix(0.4f);
 
 	// Set up worldToCamera and worldToClip
 	Eigen::Matrix4f worldToCamera = cameraToWorld.inverse();
 	Eigen::Matrix4f worldToClip = projection * worldToCamera;
 
-	std::string bunnyFilename = "D:/GitHub thing/graphics-25-26-DominikN21/Labs/week6/models/stanford_bunny_texmapped.obj";
-	std::string textureFilename = "D:/GitHub thing/graphics-25-26-DominikN21/Labs/week6/models/stanford_bunny_albedo.png";
+	std::string bunnyFilename = "../models/LeftWall2.obj";
+	std::string textureFilename = "../models/Wall.png";
 
 	std::vector<std::unique_ptr<Light>> lights;
 	lights.emplace_back(new AmbientLight(Eigen::Vector3f(0.5f, 0.5f, 0.5f)));
@@ -205,9 +205,10 @@ int main()
 
 	// Draw the bunnies
 	for (float x : {-1.0f, 1.0f}) {
-		for (float z : {3.0f, 5.0f, 7.0f}) {
-			Eigen::Matrix4f bunnyTransform = translationMatrix(Eigen::Vector3f(x, -1.0f, z)) * rotateYMatrix(M_PI);
-			drawMesh(imageBuffer, zBuffer, bunnyMesh, bunnyTexture, bunnyTexWidth, bunnyTexHeight, bunnyTransform, worldToClip, lights, width, height);
+		for (float z : {-3.0f, -5.0f, -7.0f}) {
+			Eigen::Matrix4f wallTransform = Eigen::Matrix4f::Identity();
+			drawMesh(imageBuffer, zBuffer, bunnyMesh, bunnyTexture, bunnyTexWidth, bunnyTexHeight,
+				wallTransform, worldToClip, lights, width, height);
 		}
 	}
 
