@@ -1,4 +1,4 @@
-// This define is necessary to get the M_PI constant.
+
 #define _USE_MATH_DEFINES
 #include <math.h>
 
@@ -45,7 +45,7 @@ void findScreenBoundingBox(const Triangle& t, int width, int height, int& minX, 
 	minY = std::min(std::max(minY, 0), height - 1);
 	maxY = std::min(std::max(maxY, 0), height - 1);
 }
-
+// caluclates triangles and pixels, checks depth and gets texture colour and lights
 void drawTriangle(std::vector<uint8_t>& image, int width, int height,
 	std::vector<float>& zBuffer,
 	const Triangle& t,
@@ -212,8 +212,8 @@ int main()
 
 	Eigen::Matrix4f projection = projectionMatrix(height, width, 85.f * M_PI / 180.f, 1000.f);
 
-	// The wall is at Z = -208
-	;Eigen::Matrix4f camPos = translationMatrix(Eigen::Vector3f(-164.0f, 7.0f, -180.f));
+	// scene is at Z = -208ish
+    Eigen::Matrix4f camPos = translationMatrix(Eigen::Vector3f(-164.0f, 7.0f, -180.f));
 	float cameraYaw = 3.5f;
 	Eigen::Matrix4f camRot = rotateYMatrix(cameraYaw);
 	Eigen::Matrix4f cameraToWorld = camPos * camRot;

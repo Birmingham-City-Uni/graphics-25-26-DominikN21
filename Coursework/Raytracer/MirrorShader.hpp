@@ -20,7 +20,7 @@ public:
 
 		Ray reflectionRay;
 		reflectionRay.direction = reflect(hitInfo.inDirection, hitInfo.normal);
-		reflectionRay.origin = hitInfo.location + 1e-4f * hitInfo.normal;
+		reflectionRay.origin = hitInfo.location + 0.1f * hitInfo.normal;
 
 		Eigen::Vector3f color = Eigen::Vector3f::Zero();
 
