@@ -131,21 +131,34 @@ void drawMesh(std::vector<unsigned char>& image,
 	const std::vector<std::unique_ptr<Light>>& lights,
 	int width, int height)
 {
+	//camera position
+	Eigen::Vector3f cameraPos(-164.0f, 7.0f, -180.0f);
+
 	for (int i = 0; i < mesh.vFaces.size(); ++i) {
 
 		Eigen::Vector3f
-			v0 = mesh.verts[mesh.vFaces[i][0]],
-			v1 = mesh.verts[mesh.vFaces[i][1]],
-			v2 = mesh.verts[mesh.vFaces[i][2]];
-		Eigen::Vector3f
-			n0 = mesh.norms[mesh.nFaces[i][0]],
-			n1 = mesh.norms[mesh.nFaces[i][1]],
-			n2 = mesh.norms[mesh.nFaces[i][2]];
+			v0_local = mesh.verts[mesh.vFaces[i][0]],
+			v1_local = mesh.verts[mesh.vFaces[i][1]],
+			v2_local = mesh.verts[mesh.vFaces[i][2]];
+
+		Eigen::Vector3f v0_world = (modelToWorld * vec3ToVec4(v0_local)).head<3>();
+		Eigen::Vector3f v1_world = (modelToWorld * vec3ToVec4(v1_local)).head<3>();
+		Eigen::Vector3f v2_world = (modelToWorld * vec3ToVec4(v2_local)).head<3>();
+
+		//backface culling 
+		Eigen::Vector3f edge1 = v1_world - v0_world;
+		Eigen::Vector3f edge2 = v2_world - v0_world;
+		Eigen::Vector3f faceNormal = edge1.cross(edge2).normalized();
+		Eigen::Vector3f viewDir = (cameraPos - v0_world).normalized();
+
+		if (faceNormal.dot(viewDir) <= 0.0f) {
+			continue;
+		}
 
 		Triangle t;
-		t.verts[0] = (modelToWorld * vec3ToVec4(v0)).block<3, 1>(0, 0);
-		t.verts[1] = (modelToWorld * vec3ToVec4(v1)).block<3, 1>(0, 0);
-		t.verts[2] = (modelToWorld * vec3ToVec4(v2)).block<3, 1>(0, 0);
+		t.verts[0] = v0_world;
+		t.verts[1] = v1_world;
+		t.verts[2] = v2_world;
 
 		Eigen::Vector4f vClip0 = worldToClip * vec3ToVec4(t.verts[0]);
 		Eigen::Vector4f vClip1 = worldToClip * vec3ToVec4(t.verts[1]);
@@ -169,9 +182,9 @@ void drawMesh(std::vector<unsigned char>& image,
 		t.screen[1] = toScreen(vClip1);
 		t.screen[2] = toScreen(vClip2);
 
-		t.norms[0] = (modelToWorld.block<3, 3>(0, 0).inverse().transpose() * n0).normalized();
-		t.norms[1] = (modelToWorld.block<3, 3>(0, 0).inverse().transpose() * n1).normalized();
-		t.norms[2] = (modelToWorld.block<3, 3>(0, 0).inverse().transpose() * n2).normalized();
+		t.norms[0] = (modelToWorld.block<3, 3>(0, 0).inverse().transpose() * mesh.norms[mesh.nFaces[i][0]]).normalized();
+		t.norms[1] = (modelToWorld.block<3, 3>(0, 0).inverse().transpose() * mesh.norms[mesh.nFaces[i][1]]).normalized();
+		t.norms[2] = (modelToWorld.block<3, 3>(0, 0).inverse().transpose() * mesh.norms[mesh.nFaces[i][2]]).normalized();
 
 		t.texs[0] = mesh.texs[mesh.tFaces[i][0]];
 		t.texs[1] = mesh.texs[mesh.tFaces[i][1]];
